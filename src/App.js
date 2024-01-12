@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+         99Hard first app on Pi network chain
         </a>
       </header>
     </div>
