@@ -36,18 +36,21 @@ export default function Login() {
         className="w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-hidden"
       >
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/2 bg-cover bg-center p-12 text-white flex flex-col justify-between relative overflow-hidden" style={{ backgroundImage: "url('./logo.jpg')" }}>
+        <div 
+  className="md:w-1/2 p-12 text-white flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-violet-600 to-indigo-800"
+  style={{ backgroundImage: "url('/logo.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
+>
+  <div className="md:w-1/2  mb-9">
+    <h2 className="text-4xl font-bold mb-9"></h2>
+    <p className="text-lg opacity-80 mb-9"></p>
+  </div>
 
+  <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-indigo-900 to-transparent opacity-50"></div>
 
-            <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-indigo-900 to-transparent opacity-50"></div>
-            <motion.div 
-              className="absolute -bottom-16 -left-16 w-64 h-64 border-4 border-bg-black rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            ></motion.div>
-          </div>
+</div>
+
           <div className="md:w-1/2 p-12">
-            <h3 className="text-3xl font-semibold text-gray-800 mb-8">Login to Your Account</h3>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-8">Sa'adu Zungur University</h3>
             <form className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
