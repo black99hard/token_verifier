@@ -1,13 +1,13 @@
 import { useState } from 'react'
 // import './App.css'
-import Login from './components/Login'
+import CryptoMarketInfo from './components/CryptoMarketInfo'
 function App() {
  
 
   return (
-    <>
-      <Login />
-    </>
+    <main className='app'>
+      <CryptoMarketInfo />
+    </main>
   )
 }
 
