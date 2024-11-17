@@ -2,30 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
+@layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 142 86% 28%;
-    --primary-foreground: 356 29% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 45%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142 86% 28%;
-    --radius: 0.5rem;
+    --gradient-start: #FF416C;
+    --gradient-end: #FF4B2B;
   }
 
+  body {
+    @apply bg-slate-900 text-slate-100;
+  }
+}
 
+@layer components {
+  .glass-card {
+    @apply bg-slate-800/50 backdrop-blur-lg border border-slate-700/50 shadow-xl;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 bg-slate-800/80 border border-slate-700 rounded-lg 
+    focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50
+    text-slate-100 placeholder-slate-400;
+  }
 
+  .btn-primary {
+    @apply bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)]
+    hover:from-[var(--gradient-end)] hover:to-[var(--gradient-start)]
+    text-white font-medium px-6 py-3 rounded-lg transition-all duration-300
+    focus:outline-none focus:ring-2 focus:ring-red-500/50 disabled:opacity-50
+    disabled:cursor-not-allowed shadow-lg hover:shadow-red-500/20;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-700 hover:bg-slate-600 text-white font-medium px-6 py-3 
+    rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 
+    focus:ring-slate-500/50 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg;
+  }
+
+  .network-btn {
+    @apply px-4 py-2 rounded-lg transition-all duration-300 font-medium text-sm;
+  }
+
+  .token-card {
+    @apply glass-card p-6 rounded-xl hover:border-red-500/30 transition-all duration-300;
+  }
+
+  .info-label {
+    @apply text-sm text-slate-400 mb-1;
+  }
+
+  .info-value {
+    @apply text-base font-medium text-slate-100;
+  }
+
+  /* New styles for sections */
+  .section-title {
+    @apply text-lg font-semibold text-slate-100 mb-3;
+  }
+
+  .section-content {
+    @apply space-y-3;
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px rgba(255, 65, 108, 0.2);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(255, 75, 43, 0.4);
+  }
+}
