@@ -108,18 +108,18 @@ const TokenVerifier: React.FC = () => {
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-{/* Header Section */}
-<div className="text-center space-y-4">
-<div className="inline-block p-2 glass-card rounded-full animate-glow mb-6">
-  <Shield className="w-12 h-12 text-red-400" />
-</div>
-<h1 className="text-4xl font-bold bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent">
-  Token Verifier
-</h1>
-<p className="text-slate-400 max-w-2xl mx-auto">
-  Verify and analyze tokens across multiple networks with real-time data and comprehensive insights
-</p>
-</div>
+        {/* Header Section */}
+        <div className="text-center space-y-4">
+        <div className="inline-block p-2 glass-card rounded-full animate-glow mb-6">
+          <Shield className="w-12 h-12 text-red-400" />
+        </div>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent">
+         Yaks Token Verifier
+        </h1>
+        <p className="text-slate-400 max-w-2xl mx-auto">
+          Verify and analyze tokens across multiple networks with real-time data and comprehensive insights
+        </p>
+        </div>
         
         <div className="glass-card rounded-2xl p-6 space-y-6">
           <div className="flex justify-center space-x-4">
