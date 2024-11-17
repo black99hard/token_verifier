@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { Search, RefreshCcw, Clock } from 'lucide-react';
+import { Search, RefreshCcw, Clock, Linkedin, Github } from 'lucide-react'; // Import icons
 import { NetworkButton } from './components/NetworkButton';
 import { InfoItem } from './components/InfoItem';
 import { Network, TokenData, RecentToken } from './types';
@@ -327,9 +327,16 @@ const TokenVerifier: React.FC = () => {
         </div>
       </div>
       <ToastContainer position="bottom-right" theme="dark" />
+      <div className="flex justify-center space-x-4 mt-8">
+        <a href="https://www.linkedin.com/in/yasir-bashir-6b3a8098" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+          <Linkedin size={24} />
+        </a>
+        <a href="https://github.com/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+          <Github size={24} />
+        </a>
+      </div>
     </div>
   );
 };
 
 export default TokenVerifier;
-
