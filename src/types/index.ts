@@ -31,3 +31,11 @@ export interface RecentToken {
   price_usd: string;
   volume_24h: string;
 }
+
+export interface WhitelistedToken {
+  address: string;
+  name: string;
+  symbol: string;
+  network: Network;
+  addedAt: string;
+}

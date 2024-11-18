@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { ToastContainer } from 'react-toastify';
-import { Search, RefreshCcw, Clock, Linkedin, Github } from 'lucide-react'; // Import icons
+import React, { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import { Search, RefreshCcw, Clock, Star, Linkedin, Github,Shield} from 'lucide-react';
 import { NetworkButton } from './components/NetworkButton';
 import { InfoItem } from './components/InfoItem';
-import { Network, TokenData, RecentToken } from './types';
-import { Shield } from 'lucide-react';
+import { WhitelistButton } from './components/WhitelistButton';
+import { WhitelistedTokens } from './components/WhitelistedTokens';
+import { Network, TokenData, RecentToken, WhitelistedToken } from './types';
 import { formatNumber } from './utils/format';
+import { getWhitelistedTokens, saveWhitelistedTokens } from './utils/cookies';
 import 'react-toastify/dist/ReactToastify.css';
 
 const TokenVerifier: React.FC = () => {
@@ -16,9 +18,53 @@ const TokenVerifier: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [whitelistedTokens, setWhitelistedTokens] = useState<WhitelistedToken[]>([]);
+  const [showWhitelist, setShowWhitelist] = useState(false);
 
-  const verifyToken = async () => {
-    if (!contractAddress.trim()) {
+  useEffect(() => {
+    setWhitelistedTokens(getWhitelistedTokens());
+  }, []);
+
+  const isTokenWhitelisted = (address: string, network: Network) => {
+    return whitelistedTokens.some(
+      token => token.address.toLowerCase() === address.toLowerCase() && token.network === network
+    );
+  };
+
+  const toggleWhitelist = (token: TokenData, network: Network) => {
+    const isCurrentlyWhitelisted = isTokenWhitelisted(token.address, network);
+    let updatedTokens: WhitelistedToken[];
+
+    if (isCurrentlyWhitelisted) {
+      updatedTokens = whitelistedTokens.filter(
+        t => !(t.address.toLowerCase() === token.address.toLowerCase() && t.network === network)
+      );
+      toast.success('Token removed from whitelist');
+    } else {
+      const newToken: WhitelistedToken = {
+        address: token.address,
+        name: token.name,
+        symbol: token.symbol,
+        network,
+        addedAt: new Date().toISOString(),
+      };
+      updatedTokens = [...whitelistedTokens, newToken];
+      toast.success('Token added to whitelist');
+    }
+
+    setWhitelistedTokens(updatedTokens);
+    saveWhitelistedTokens(updatedTokens);
+  };
+
+  const handleWhitelistedTokenSelect = (token: WhitelistedToken) => {
+    setNetwork(token.network);
+    setContractAddress(token.address);
+    setShowWhitelist(false);
+    verifyToken(token.address, token.network);
+  };
+
+  const verifyToken = async (address = contractAddress, selectedNetwork = network) => {
+    if (!address.trim()) {
       setError('Please enter a contract address');
       return;
     }
@@ -29,8 +75,8 @@ const TokenVerifier: React.FC = () => {
 
     try {
       const [response1, response2] = await Promise.all([
-        fetch(`https://api.geckoterminal.com/api/v2/networks/${network}/tokens/${contractAddress}`),
-        fetch(`https://api.geckoterminal.com/api/v2/networks/${network}/tokens/${contractAddress}/info`)
+        fetch(`https://api.geckoterminal.com/api/v2/networks/${selectedNetwork}/tokens/${address}`),
+        fetch(`https://api.geckoterminal.com/api/v2/networks/${selectedNetwork}/tokens/${address}/info`)
       ]);
 
       if (!response1.ok || !response2.ok) {
@@ -45,7 +91,7 @@ const TokenVerifier: React.FC = () => {
       setTokenData({
         name: attributes1.name || attributes2.name || 'N/A',
         symbol: attributes1.symbol || attributes2.symbol || 'N/A',
-        address: attributes1.address || attributes2.address || contractAddress,
+        address: attributes1.address || attributes2.address || address,
         decimals: attributes1.decimals?.toString() || 'N/A',
         image_url: attributes1.image_url || attributes2.image_url || null,
         websites: attributes1.websites || attributes2.websites || [],
@@ -122,219 +168,251 @@ const TokenVerifier: React.FC = () => {
         </div>
         
         <div className="glass-card rounded-2xl p-6 space-y-6">
-          <div className="flex justify-center space-x-4">
-            <NetworkButton network="tron" currentNetwork={network} onClick={setNetwork} />
-            <NetworkButton network="solana" currentNetwork={network} onClick={setNetwork} />
-            <NetworkButton network="ton" currentNetwork={network} onClick={setNetwork} />
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-4">
+              <NetworkButton network="tron" currentNetwork={network} onClick={setNetwork} />
+              <NetworkButton network="solana" currentNetwork={network} onClick={setNetwork} />
+              <NetworkButton network="ton" currentNetwork={network} onClick={setNetwork} />
+            </div>
+            <button
+              onClick={() => setShowWhitelist(!showWhitelist)}
+              className="flex items-center space-x-2 text-slate-400 hover:text-yellow-400 transition-colors duration-300"
+            >
+              <Star size={20} />
+              <span className="hidden sm:inline">{showWhitelist ? 'Close' : 'Watchlist'}</span>
+            </button>
           </div>
 
-          <div className="relative">
-            <input
-              type="text"
-              placeholder={`Enter ${network.toUpperCase()} contract address`}
-              value={contractAddress}
-              onChange={(e) => setContractAddress(e.target.value)}
-              className="input-field pl-10"
+          {showWhitelist ? (
+            <WhitelistedTokens
+              tokens={whitelistedTokens}
+              onSelect={handleWhitelistedTokenSelect}
+              onRemove={(token) => toggleWhitelist(
+                { ...token, decimals: '', websites: [], description: '', discord_url: '', 
+                  telegram_handle: '', twitter_handle: '', coingecko_coin_id: '', gt_score: '',
+                  metadata_updated_at: '', total_supply: '', price_usd: '', fdv_usd: '',
+                  total_reserve_in_usd: '', volume_24h: '', market_cap_usd: '', top_pools: [],
+                  image_url: null },
+                token.network
+              )}
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
-          </div>
-
-          <div className="flex space-x-4">
-            <button
-              onClick={verifyToken}
-              disabled={isLoading}
-              className="btn-primary flex-1 flex items-center justify-center"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCcw className="animate-spin mr-2" size={20} />
-                  Verifying...
-                </>
-              ) : (
-                'Verify Token'
-              )}
-            </button>
-            <button
-              onClick={fetchRecentTokens}
-              disabled={isLoadingRecent}
-              className="btn-secondary flex-1 flex items-center justify-center"
-            >
-              {isLoadingRecent ? (
-                <>
-                  <RefreshCcw className="animate-spin mr-2" size={20} />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <Clock className="mr-2" size={20} />
-                  Recent Tokens
-                </>
-              )}
-            </button>
-          </div>
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          {tokenData && (
-            <div className="space-y-8">
-              <div className="flex items-center space-x-4">
-                {tokenData.image_url && (
-                  <img 
-                    src={tokenData.image_url} 
-                    alt={`${tokenData.name} logo`} 
-                    className="w-16 h-16 rounded-full ring-2 ring-red-500/20"
-                  />
-                )}
-                <div>
-                  <h2 className="text-2xl font-bold">{tokenData.name}</h2>
-                  <p className="text-slate-400">{tokenData.symbol} • {network.toUpperCase()}</p>
-                </div>
+          ) : (
+            <>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={`Enter ${network.toUpperCase()} contract address`}
+                  value={contractAddress}
+                  onChange={(e) => setContractAddress(e.target.value)}
+                  className="input-field pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <InfoItem 
-                  label="Contract Address" 
-                  value={tokenData.address} 
-                  isAddress 
-                />
-                <InfoItem 
-                  label="Price" 
-                  value={`$${parseFloat(tokenData.price_usd).toFixed(6)}`} 
-                />
-                <InfoItem 
-                  label="Market Cap" 
-                  value={`$${formatNumber(parseFloat(tokenData.market_cap_usd))}`} 
-                />
-                <InfoItem 
-                  label="Fully Diluted Valuation" 
-                  value={`$${formatNumber(parseFloat(tokenData.fdv_usd))}`} 
-                />
-                <InfoItem 
-                  label="24h Volume" 
-                  value={`$${formatNumber(parseFloat(tokenData.volume_24h))}`} 
-                />
-                <InfoItem 
-                  label="Total Supply" 
-                  value={formatNumber(parseFloat(tokenData.total_supply))} 
-                />
-                <InfoItem 
-                  label="Total Reserve in USD" 
-                  value={`$${formatNumber(parseFloat(tokenData.total_reserve_in_usd))}`} 
-                />
-                <InfoItem 
-                  label="Decimals" 
-                  value={tokenData.decimals} 
-                />
-                <InfoItem 
-                  label="GT Score" 
-                  value={tokenData.gt_score} 
-                />
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => verifyToken()}
+                  disabled={isLoading}
+                  className="btn-primary flex-1 flex items-center justify-center"
+                >
+                  {isLoading ? (
+                    <>
+                      <RefreshCcw className="animate-spin mr-2" size={20} />
+                      Verifying...
+                    </>
+                  ) : (
+                    'Verify Token'
+                  )}
+                </button>
+                <button
+                  onClick={fetchRecentTokens}
+                  disabled={isLoadingRecent}
+                  className="btn-secondary flex-1 flex items-center justify-center"
+                >
+                  {isLoadingRecent ? (
+                    <>
+                      <RefreshCcw className="animate-spin mr-2" size={20} />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="mr-2" size={20} />
+                      Recent Tokens
+                    </>
+                  )}
+                </button>
               </div>
 
-              {tokenData.description && tokenData.description !== 'N/A' && (
-                <div className="glass-card p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-slate-300">{tokenData.description}</p>
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg">
+                  {error}
                 </div>
               )}
 
-              {tokenData.websites.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">Websites</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {tokenData.websites.map((website, index) => (
-                      <InfoItem
-                        key={index}
-                        label={`Website ${index + 1}`}
-                        value={website}
-                        isLink
-                      />
+              {tokenData && (
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      {tokenData.image_url && (
+                        <img 
+                          src={tokenData.image_url} 
+                          alt={`${tokenData.name} logo`} 
+                          className="w-16 h-16 rounded-full ring-2 ring-red-500/20"
+                        />
+                      )}
+                      <div>
+                        <h2 className="text-2xl font-bold">{tokenData.name}</h2>
+                        <p className="text-slate-400">{tokenData.symbol} • {network.toUpperCase()}</p>
+                      </div>
+                    </div>
+                    <WhitelistButton
+                      isWhitelisted={isTokenWhitelisted(tokenData.address, network)}
+                      onClick={() => toggleWhitelist(tokenData, network)}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <InfoItem 
+                      label="Contract Address" 
+                      value={tokenData.address} 
+                      isAddress 
+                    />
+                    <InfoItem 
+                      label="Price" 
+                      value={`$${parseFloat(tokenData.price_usd).toFixed(6)}`} 
+                    />
+                    <InfoItem 
+                      label="Market Cap" 
+                      value={`$${formatNumber(parseFloat(tokenData.market_cap_usd))}`} 
+                    />
+                    <InfoItem 
+                      label="Fully Diluted Valuation" 
+                      value={`$${formatNumber(parseFloat(tokenData.fdv_usd))}`} 
+                    />
+                    <InfoItem 
+                      label="24h Volume" 
+                      value={`$${formatNumber(parseFloat(tokenData.volume_24h))}`} 
+                    />
+                    <InfoItem 
+                      label="Total Supply" 
+                      value={formatNumber(parseFloat(tokenData.total_supply))} 
+                    />
+                    <InfoItem 
+                      label="Total Reserve in USD" 
+                      value={`$${formatNumber(parseFloat(tokenData.total_reserve_in_usd))}`} 
+                    />
+                    <InfoItem 
+                      label="Decimals" 
+                      value={tokenData.decimals} 
+                    />
+                    <InfoItem 
+                      label="GT Score" 
+                      value={tokenData.gt_score} 
+                    />
+                  </div>
+
+                  {tokenData.description && tokenData.description !== 'N/A' && (
+                    <div className="glass-card p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold mb-2">Description</h3>
+                      <p className="text-slate-300">{tokenData.description}</p>
+                    </div>
+                  )}
+
+                  {tokenData.websites.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold">Websites</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {tokenData.websites.map((website, index) => (
+                          <InfoItem
+                            key={index}
+                            label={`Website ${index + 1}`}
+                            value={website}
+                            isLink
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(tokenData.discord_url || tokenData.telegram_handle || tokenData.twitter_handle) && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold">Social Accounts</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {tokenData.discord_url && (
+                          <InfoItem
+                            label="Discord"
+                            value={tokenData.discord_url}
+                            isLink
+                          />
+                        )}
+                        {tokenData.telegram_handle && (
+                          <InfoItem
+                            label="Telegram"
+                            value={`https://t.me/${tokenData.telegram_handle}`}
+                            isLink
+                          />
+                        )}
+                        {tokenData.twitter_handle && (
+                          <InfoItem
+                            label="Twitter"
+                            value={`https://twitter.com/${tokenData.twitter_handle}`}
+                            isLink
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {tokenData.top_pools.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold">Top Pools</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {tokenData.top_pools.map((pool, index) => (
+                          <InfoItem
+                            key={pool}
+                            label={`Pool ${index + 1}`}
+                            value={pool}
+                            isAddress
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {recentTokens.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold">Recently Updated Tokens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {recentTokens.map((token) => (
+                      <div key={token.id} className="token-card">
+                        <h4 className="font-bold mb-2">{token.name} ({token.symbol})</h4>
+                        <p className="text-sm text-slate-400">Network: {token.network.toUpperCase()}</p>
+                        <p className="text-sm text-slate-400">
+                          Price: ${parseFloat(token.price_usd).toFixed(6)}
+                        </p>
+                        <p className="text-sm text-slate-400">
+                          24h Volume: ${formatNumber(parseFloat(token.volume_24h))}
+                        </p>
+                      </div>
                     ))}
                   </div>
                 </div>
               )}
-
-              {(tokenData.discord_url || tokenData.telegram_handle || tokenData.twitter_handle) && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">Social Accounts</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {tokenData.discord_url && (
-                      <InfoItem
-                        label="Discord"
-                        value={tokenData.discord_url}
-                        isLink
-                      />
-                    )}
-                    {tokenData.telegram_handle && (
-                      <InfoItem
-                        label="Telegram"
-                        value={`https://t.me/${tokenData.telegram_handle}`}
-                        isLink
-                      />
-                    )}
-                    {tokenData.twitter_handle && (
-                      <InfoItem
-                        label="Twitter"
-                        value={`https://twitter.com/${tokenData.twitter_handle}`}
-                        isLink
-                      />
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {tokenData.top_pools.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">Top Pools</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {tokenData.top_pools.map((pool, index) => (
-                      <InfoItem
-                        key={pool}
-                        label={`Pool ${index + 1}`}
-                        value={pool}
-                        isAddress
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {recentTokens.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold">Recently Updated Tokens</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {recentTokens.map((token) => (
-                  <div key={token.id} className="token-card">
-                    <h4 className="font-bold mb-2">{token.name} ({token.symbol})</h4>
-                    <p className="text-sm text-slate-400">Network: {token.network.toUpperCase()}</p>
-                    <p className="text-sm text-slate-400">
-                      Price: ${parseFloat(token.price_usd).toFixed(6)}
-                    </p>
-                    <p className="text-sm text-slate-400">
-                      24h Volume: ${formatNumber(parseFloat(token.volume_24h))}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            </>
           )}
         </div>
       </div>
       <ToastContainer position="bottom-right" theme="dark" />
       <div className="flex justify-center space-x-4 mt-8">
-        <a href="https://www.linkedin.com/in/yasir-bashir-6b3a8098" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
-          <Linkedin size={24} />
-        </a>
-        <a href="https://github.com/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
-          <Github size={24} />
-        </a>
-      </div>
+      <a href="https://www.linkedin.com/in/yasir-bashir-6b3a8098" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+        <Linkedin size={24} />
+      </a>
+      <a href="https://github.com/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+        <Github size={24} />
+      </a>
+    </div>
     </div>
   );
 };
