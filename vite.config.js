@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Your App Name',
-        short_name: 'App',
-        description: 'Your app description',
+        name: 'Yaks Token Verifier',
+        short_name: 'Yaks Verifier',
+        description: 'Verify tokens by their contract address and access essential information on specific networks like Solana, Tron, and TON.',
         theme_color: '#ffffff',
         icons: [
           {
