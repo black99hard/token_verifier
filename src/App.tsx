@@ -10,7 +10,7 @@ import { formatNumber } from './utils/format';
 import { getWhitelistedTokens, saveWhitelistedTokens } from './utils/cookies';
 import 'react-toastify/dist/ReactToastify.css';
 import { Analytics } from "@vercel/analytics/react"
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const TokenVerifier: React.FC = () => {
   const [network, setNetwork] = useState<Network>('tron');
@@ -156,6 +156,7 @@ const TokenVerifier: React.FC = () => {
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <Analytics/>
+    <SpeedInsights/>
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header Section */}
         <div className="text-center space-y-4">
