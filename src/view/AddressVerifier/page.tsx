@@ -15,56 +15,66 @@ const API_CONFIGS = {
       } else if (queryType === 'tokens') {
         url = `https://apilist.tronscanapi.com/api/account/tokens?address=${address}&start=0&limit=20&hidden=0&show=0&sortType=0&sortBy=0&token=`;
       } else {
-        throw new Error('Invalid query type');
+        throw new Error('Invalid query type. Please select "Account" or "Tokens".');
       }
 
       try {
         const response = await axios.get(url);
-        const data = response.data;
-        if (data) {
-          return { data: data };
-        } else {
-          throw new Error('Invalid address or no data available');
+        if (response.data) {
+          return response.data;
         }
+        throw new Error('Invalid address or no data available.');
       } catch (error) {
-        throw new Error(error.response?.data?.message || 'An error occurred while fetching data');
+        if (axios.isAxiosError(error) && error.response) {
+          throw new Error(error.response.data?.message || 'Error occurred while fetching data.');
+        }
+        throw new Error('Network error occurred while fetching data.');
       }
     },
   },
 };
 
-
 const AddressVerifier: React.FC = () => {
   const [address, setAddress] = useState('');
-  const [selectedNetwork, setSelectedNetwork] = useState<keyof typeof API_CONFIGS>('tron'); // Default to Tron
+  const [selectedNetwork, setSelectedNetwork] = useState<keyof typeof API_CONFIGS>('tron');
   const [queryType, setQueryType] = useState('');
   const [accountData, setAccountData] = useState<any>(null);
+  const [tokenData, setTokenData] = useState<any>(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFetchAddressData = async () => {
+  const validateInputs = (): boolean => {
     if (!address.trim()) {
-      toast.error('Please enter a valid address.');
-      return;
+      toast.error('Address cannot be empty. Please enter a valid blockchain address.');
+      return false;
     }
-
     if (selectedNetwork === 'tron' && !queryType) {
-      toast.error('Please select a query type.');
-      return;
+      toast.error('Please select a query type for the Tron network.');
+      return false;
     }
+    return true;
+  };
+
+  const handleFetchAddressData = async () => {
+    if (!validateInputs()) return;
 
     setIsLoading(true);
     setAccountData(null);
+    setTokenData(null);
     setError(null);
 
     try {
-      const fetchAddressData = API_CONFIGS[selectedNetwork].fetchAddressData;
+      const { fetchAddressData } = API_CONFIGS[selectedNetwork];
       const data = await fetchAddressData(address, queryType);
       if (!data || Object.keys(data).length === 0) {
-        throw new Error('No data available for the given address.');
+        throw new Error('No data found for the entered address.');
       }
-      setAccountData(data.data);
-      toast.success(`Address data fetched successfully for ${API_CONFIGS[selectedNetwork].name}!`);
+      setAccountData(data);
+      if (queryType === 'tokens') {
+        setTokenData(data);
+      }
+      toast.success(`Data fetched successfully for ${API_CONFIGS[selectedNetwork].name}!`);
     } catch (err) {
       console.error('Error fetching address data:', err);
       setError(err instanceof Error ? err.message : 'An unknown error occurred.');
@@ -141,13 +151,8 @@ const AddressVerifier: React.FC = () => {
         )}
 
         {/* Display Account Data */}
-        {queryType === 'account' && accountData && Object.keys(accountData).length > 0 && (
-          <AccountQuery data={accountData} />
-        )}
-
-        {queryType === 'tokens' && accountData && Object.keys(accountData).length > 0 && (
-          <TokenQuery data={accountData} />
-        )}
+        {queryType === 'account' && accountData && <AccountQuery data={accountData} />}
+        {queryType === 'tokens' && tokenData && <TokenQuery data={tokenData} />}
       </div>
       <ToastContainer position="bottom-right" theme="dark" />
     </div>
