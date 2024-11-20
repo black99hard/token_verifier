@@ -3,10 +3,9 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AccountQuery from '../../components/AccountQuery/page';
+import TokenQuery from '../../components/TokenQuery/page';
 
-// Updated API_CONFIGS with Tron
 const API_CONFIGS = {
-
   tron: {
     name: 'Tron',
     fetchAddressData: async (address: string, queryType: string) => {
@@ -19,26 +18,29 @@ const API_CONFIGS = {
         throw new Error('Invalid query type');
       }
 
-      const response = await axios.get(url);
-      const data = response.data;
-      console.log('Tron data:', data);
-      if (data) {
-        return {
-         data: data,
-        };
-      } else {
-        throw new Error('Invalid address or no data available');
+      try {
+        const response = await axios.get(url);
+        const data = response.data;
+        if (data) {
+          return { data: data };
+        } else {
+          throw new Error('Invalid address or no data available');
+        }
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'An error occurred while fetching data');
       }
     },
   },
 };
 
+
 const AddressVerifier: React.FC = () => {
   const [address, setAddress] = useState('');
-  const [selectedNetwork, setSelectedNetwork] = useState<keyof typeof API_CONFIGS>('tron'); // Default to BNB
+  const [selectedNetwork, setSelectedNetwork] = useState<keyof typeof API_CONFIGS>('tron'); // Default to Tron
   const [queryType, setQueryType] = useState('');
-  const [accountData, setAccountData] = useState([]);
+  const [accountData, setAccountData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFetchAddressData = async () => {
     if (!address.trim()) {
@@ -52,17 +54,20 @@ const AddressVerifier: React.FC = () => {
     }
 
     setIsLoading(true);
-    setAccountData([]);
-
+    setAccountData(null);
+    setError(null);
 
     try {
       const fetchAddressData = API_CONFIGS[selectedNetwork].fetchAddressData;
       const data = await fetchAddressData(address, queryType);
-      setAccountData(data.data || []);
+      if (!data || Object.keys(data).length === 0) {
+        throw new Error('No data available for the given address.');
+      }
+      setAccountData(data.data);
       toast.success(`Address data fetched successfully for ${API_CONFIGS[selectedNetwork].name}!`);
     } catch (err) {
       console.error('Error fetching address data:', err);
-      toast.error(err instanceof Error ? err.message : 'An unknown error occurred.');
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -76,18 +81,6 @@ const AddressVerifier: React.FC = () => {
 
         {/* Network Selection */}
         <div className="flex justify-center space-x-4 mb-8">
-          {/* <button
-            onClick={() => setSelectedNetwork('eth')}
-            className={`btn ${selectedNetwork === 'eth' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Ethereum
-          </button>
-          <button
-            onClick={() => setSelectedNetwork('bnb')}
-            className={`btn ${selectedNetwork === 'bnb' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            BNB
-          </button> */}
           <button
             onClick={() => setSelectedNetwork('tron')}
             className={`btn ${selectedNetwork === 'tron' ? 'btn-primary' : 'btn-secondary'}`}
@@ -140,10 +133,21 @@ const AddressVerifier: React.FC = () => {
           </div>
         </div>
 
-        {/* Display Transaction and Total Amount */}
-        
-        {queryType === 'account' && Object.keys(accountData).length > 0 && <AccountQuery data={accountData} />}
-        
+        {/* Display Error Message */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {/* Display Account Data */}
+        {queryType === 'account' && accountData && Object.keys(accountData).length > 0 && (
+          <AccountQuery data={accountData} />
+        )}
+
+        {queryType === 'tokens' && accountData && Object.keys(accountData).length > 0 && (
+          <TokenQuery data={accountData} />
+        )}
       </div>
       <ToastContainer position="bottom-right" theme="dark" />
     </div>
@@ -161,8 +165,5 @@ const Header: React.FC = () => (
     </p>
   </div>
 );
-
-// Transaction List Component
-
 
 export default AddressVerifier;
