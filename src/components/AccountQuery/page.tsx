@@ -36,7 +36,6 @@ interface AccountQueryProps {
     };
     withPriceTokens: TokenInfo[];
     date_created: number;
-    // Mocked transaction data (replace with actual data when available)
     incomingTransactions: Transaction[];
     outgoingTransactions: Transaction[];
   };
@@ -44,24 +43,44 @@ interface AccountQueryProps {
 
 const AccountQuery: React.FC<AccountQueryProps> = ({ data }) => {
 
+  // Ensure data exists and is correctly formatted before rendering
+  if (!data || !data.address) {
+    return <div>Error: Missing account data</div>;
+  }
 
   const formatBalance = (balance: number, decimal: number = 6) => {
-    return (balance / Math.pow(10, decimal)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+    try {
+      return (balance / Math.pow(10, decimal)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+    } catch (error) {
+      console.error('Error formatting balance:', error);
+      return 'Invalid balance';
+    }
   };
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString();
+    try {
+      return new Date(timestamp).toLocaleDateString();
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-    toast.success('Copied to clipboard!');
-
+    try {
+      navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard!');
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      toast.error('Failed to copy!');
+    }
   };
+
   const truncateAddress = (address: string) => {
+    if (!address) return 'Invalid address';
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+
   return (
     <div className=" ">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -80,15 +99,13 @@ const AccountQuery: React.FC<AccountQueryProps> = ({ data }) => {
             <InfoCard title="Balance" value={`${formatBalance(data.balance)} TRX`} />
             <InfoCard 
               title="Incoming Transactions" 
-              value={data.transactions_in.toString()} 
+              value={data.transactions_in?.toString() ?? 'N/A'} 
               clickable
-              
             />
             <InfoCard 
               title="Outgoing Transactions" 
-              value={data.transactions_out.toString()} 
+              value={data.transactions_out?.toString() ?? 'N/A'} 
               clickable
-              
             />
             <InfoCard title="Total Frozen" value={`${formatBalance(data.totalFrozenV2)} TRX`} />
             <InfoCard title="Account Created" value={formatDate(data.date_created)} />
@@ -99,11 +116,11 @@ const AccountQuery: React.FC<AccountQueryProps> = ({ data }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InfoCard 
                 title="Free Bandwidth" 
-                value={`${data.bandwidth.freeNetRemaining} / ${data.bandwidth.freeNetLimit}`} 
+                value={`${data.bandwidth.freeNetRemaining ?? 'N/A'} / ${data.bandwidth.freeNetLimit ?? 'N/A'}`} 
               />
               <InfoCard 
                 title="Paid Bandwidth" 
-                value={`${data.bandwidth.netRemaining} / ${data.bandwidth.netLimit}`} 
+                value={`${data.bandwidth.netRemaining ?? 'N/A'} / ${data.bandwidth.netLimit ?? 'N/A'}`} 
               />
             </div>
           </div>
@@ -111,15 +128,17 @@ const AccountQuery: React.FC<AccountQueryProps> = ({ data }) => {
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">Token Holdings</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {data.withPriceTokens.map((token, index) => (
-                <TokenCard key={index} token={token} onCopy={() => copyToClipboard(token.tokenId)} />
-              ))}
+              {data.withPriceTokens && data.withPriceTokens.length > 0 ? (
+                data.withPriceTokens.map((token, index) => (
+                  <TokenCard key={index} token={token} onCopy={() => copyToClipboard(token.tokenId)} />
+                ))
+              ) : (
+                <p>No tokens available</p>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-
     </div>
   );
 };
@@ -177,15 +196,19 @@ const TransactionModal: React.FC<{
       <div className="bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-auto">
         <h2 className="text-2xl font-bold mb-4">{title}</h2>
         <div className="space-y-4">
-          {transactions.map((tx, index) => (
-            <div key={index} className="bg-gray-700 p-4 rounded-lg">
-              <p><strong>Hash:</strong> {tx.hash}</p>
-              <p><strong>Date:</strong> {formatDate(tx.timestamp)}</p>
-              <p><strong>Amount:</strong> {formatBalance(tx.amount)} TRX</p>
-              <p><strong>From:</strong> {tx.from}</p>
-              <p><strong>To:</strong> {tx.to}</p>
-            </div>
-          ))}
+          {transactions.length > 0 ? (
+            transactions.map((tx, index) => (
+              <div key={index} className="bg-gray-700 p-4 rounded-lg">
+                <p><strong>Hash:</strong> {tx.hash}</p>
+                <p><strong>Date:</strong> {formatDate(tx.timestamp)}</p>
+                <p><strong>Amount:</strong> {formatBalance(tx.amount)} TRX</p>
+                <p><strong>From:</strong> {tx.from}</p>
+                <p><strong>To:</strong> {tx.to}</p>
+              </div>
+            ))
+          ) : (
+            <p>No transactions available</p>
+          )}
         </div>
         <button 
           onClick={onClose}
@@ -196,10 +219,6 @@ const TransactionModal: React.FC<{
       </div>
     </div>
   );
-};
-
-const formatDate = (timestamp: number) => {
-  return new Date(timestamp).toLocaleString();
 };
 
 export default AccountQuery;
