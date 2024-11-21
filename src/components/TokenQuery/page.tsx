@@ -1,5 +1,6 @@
 import React from 'react';
 import { Copy } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 interface TokenData {
   tokenId: string;
@@ -10,12 +11,10 @@ interface TokenData {
   tokenLogo: string;
   tokenPriceInTrx?: number;
   tokenPriceInUsd?: number;
-  amount?: number | string;
+  amount?: number;
   amountInUsd?: number;
-  quantity?: number | string;
   nrOfTokenHolders?: number;
   transferCount?: number;
-  level?: string;
 }
 
 interface TokenQueryProps {
@@ -33,9 +32,12 @@ const formatBalance = (balance: string, decimal: number) => {
 };
 
 const TokenQuery: React.FC<TokenQueryProps> = ({ data }) => {
+  if (!data || !data.data) {
+    return <div className="text-red-500">No token data available.</div>;
+  }
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    // You could add a toast notification here
+    toast.success('Copied to clipboard!');
   };
 
   return (
@@ -69,7 +71,7 @@ const TokenCard: React.FC<{ token: TokenData; onCopy: () => void; formatBalance:
       </button>
     </div>
     <div className="space-y-2">
-      <InfoRow label="Balance" value={formatBalance(token.balance, token.tokenDecimal)} />
+      {/* <InfoRow label="Balance" value={formatBalance(token.balance, token.tokenDecimal)} /> */}
       {token.amount && <InfoRow label="Amount" value={token.amount.toString()} />}
       {token.amountInUsd && <InfoRow label="USD Value" value={`$${token.amountInUsd.toFixed(2)}`} />}
       {token.tokenPriceInTrx && <InfoRow label="Price (TRX)" value={token.tokenPriceInTrx.toFixed(6)} />}

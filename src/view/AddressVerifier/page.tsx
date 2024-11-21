@@ -71,6 +71,7 @@ const AddressVerifier: React.FC = () => {
         throw new Error('No data found for the entered address.');
       }
       setAccountData(data);
+      
       if (queryType === 'tokens') {
         setTokenData(data);
       }
