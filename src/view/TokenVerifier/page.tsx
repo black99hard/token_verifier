@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Search, RefreshCcw, Clock, Star, Linkedin, Github,Shield} from 'lucide-react';
+import { Star,  Github, MessageCircleCode } from 'lucide-react';
 import { NetworkButton } from '../../components/NetworkButton';
-import { InfoItem } from '../../components/InfoItem';
-import { WhitelistButton } from '../../components/WhitelistButton';
 import { WhitelistedTokens } from '../../components/WhitelistedTokens';
+import { TokenDataDisplay } from '../../components/TokenDataDisplay';
+import { Header } from '../../components/Header';
+import { SearchForm } from '../../components/SearchForm';
+import { RecentTokensList } from '../../components/RecentTokensList';
 import { Network, TokenData, RecentToken, WhitelistedToken } from '../../types';
-import { formatNumber } from '../../utils/format';
 import { getWhitelistedTokens, saveWhitelistedTokens } from '../../utils/cookies';
-
+import './custom.css';
 
 const TokenVerifier: React.FC = () => {
   const [network, setNetwork] = useState<Network>('tron');
@@ -82,6 +83,7 @@ const TokenVerifier: React.FC = () => {
       if (!response1.ok || !response2.ok) {
         throw new Error(`Error fetching data: ${response1.statusText} / ${response2.statusText}`);
       }
+      setRecentTokens([]);
 
       const [data1, data2] = await Promise.all([response1.json(), response2.json()]);
 
@@ -117,70 +119,73 @@ const TokenVerifier: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  const fetchRecentTokens = async () => {
+  
+  const fetchTrendingTokens = async () => {
     setIsLoadingRecent(true);
     setError(null);
-
+  
     try {
-      const response = await fetch('https://api.geckoterminal.com/api/v2/tokens/info_recently_updated');
-      
+      // Replace with the actual endpoint to fetch trending tokens
+      const response = await fetch('https://api.geckoterminal.com/api/v2/networks/trending_pools?include=network&page=1'); // Update URL for trending tokens
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+      setTokenData(null);
       const data = await response.json();
-
+  
       if (data.data && Array.isArray(data.data)) {
-        setRecentTokens(data.data.map((token: { id: any; attributes: { name: any; symbol: any; price_usd: { toString: () => any; }; volume_usd: { h24: any; }; }; relationships: { network: { data: { id: string; }; }; }; }) => ({
+        setRecentTokens(data.data.map((token: { 
+          id: any; 
+          attributes: { 
+            name: string; 
+            address: string; 
+            base_token_price_usd: string; 
+            quote_token_price_usd: string; 
+            market_cap_usd: string; 
+            price_change_percentage: { [key: string]: string }; 
+            volume_usd: { h24: string }; 
+          }; 
+        }) => ({
           id: token.id,
           name: token.attributes.name,
-          symbol: token.attributes.symbol,
-          network: token.relationships.network.data.id as Network,
-          price_usd: token.attributes.price_usd?.toString() || 'N/A',
-          volume_24h: (token.attributes.volume_usd?.h24 || 'N/A').toString(),
+          address: token.attributes.address,
+          baseTokenPriceUsd: token.attributes.base_token_price_usd || 'N/A',
+          quoteTokenPriceUsd: token.attributes.quote_token_price_usd || 'N/A',
+          marketCapUsd: token.attributes.market_cap_usd || 'N/A',
+          priceChangePercentage: token.attributes.price_change_percentage || {},
+          volume24h: token.attributes.volume_usd?.h24 || 'N/A',
         })));
       } else {
         throw new Error('Invalid data structure');
       }
     } catch (err) {
-      console.error('Error fetching recent tokens:', err);
+      console.error('Error fetching trending tokens:', err);
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsLoadingRecent(false);
     }
   };
+  
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header Section */}
-        <div className="text-center space-y-4">
-        <div className="inline-block p-2 glass-card rounded-full animate-glow mb-6">
-          <Shield className="w-12 h-12 text-red-400" />
-        </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent">
-         Yaks Token Verifier
-        </h1>
-        <p className="text-slate-400 max-w-2xl mx-auto">
-          Verify and analyze tokens across multiple networks with real-time data and comprehensive insights
-        </p>
-        </div>
+    <div className="min-h-screen py-4 px-2 sm:py-8 sm:px-4 md:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+        <Header />
         
-        <div className="glass-card rounded-2xl p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-4">
+        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4">
               <NetworkButton network="tron" currentNetwork={network} onClick={setNetwork} />
               <NetworkButton network="solana" currentNetwork={network} onClick={setNetwork} />
               <NetworkButton network="ton" currentNetwork={network} onClick={setNetwork} />
             </div>
             <button
               onClick={() => setShowWhitelist(!showWhitelist)}
-              className="flex items-center space-x-2 text-slate-400 hover:text-yellow-400 transition-colors duration-300"
+              className="flex items-center space-x-2 text-slate-400 hover:text-red-400 transition-colors duration-300"
             >
               <Star size={20} />
-              <span className="hidden sm:inline">{showWhitelist ? 'Close' : 'Watchlist'}</span>
+              <span>{showWhitelist ? '' : ''}</span>
             </button>
           </div>
 
@@ -199,223 +204,49 @@ const TokenVerifier: React.FC = () => {
             />
           ) : (
             <>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder={`Enter ${network.toUpperCase()} contract address`}
-                  value={contractAddress}
-                  onChange={(e) => setContractAddress(e.target.value)}
-                  className="input-field pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
-              </div>
-
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => verifyToken()}
-                  disabled={isLoading}
-                  className="btn-primary flex-1 flex items-center justify-center"
-                >
-                  {isLoading ? (
-                    <>
-                      <RefreshCcw className="animate-spin mr-2" size={20} />
-                      Verifying...
-                    </>
-                  ) : (
-                    'Verify Token'
-                  )}
-                </button>
-                <button
-                  onClick={fetchRecentTokens}
-                  disabled={isLoadingRecent}
-                  className="btn-secondary flex-1 flex items-center justify-center"
-                >
-                  {isLoadingRecent ? (
-                    <>
-                      <RefreshCcw className="animate-spin mr-2" size={20} />
-                      Loading...
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="mr-2" size={20} />
-                      Recent Tokens
-                    </>
-                  )}
-                </button>
-              </div>
+              <SearchForm
+                network={network}
+                contractAddress={contractAddress}
+                setContractAddress={setContractAddress}
+                verifyToken={() => verifyToken()}
+                fetchTrendingTokens={fetchTrendingTokens}
+                isLoading={isLoading}
+                isLoadingRecent={isLoadingRecent}
+              />
 
               {error && (
-                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg">
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 sm:p-4 rounded-lg text-sm sm:text-base">
                   {error}
                 </div>
               )}
 
               {tokenData && (
-                <div className="space-y-8">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      {tokenData.image_url && (
-                        <img 
-                          src={tokenData.image_url} 
-                          alt={`${tokenData.name} logo`} 
-                          className="w-16 h-16 rounded-full ring-2 ring-red-500/20"
-                        />
-                      )}
-                      <div>
-                        <h2 className="text-2xl font-bold">{tokenData.name}</h2>
-                        <p className="text-slate-400">{tokenData.symbol} • {network.toUpperCase()}</p>
-                      </div>
-                    </div>
-                    <WhitelistButton
-                      isWhitelisted={isTokenWhitelisted(tokenData.address, network)}
-                      onClick={() => toggleWhitelist(tokenData, network)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <InfoItem 
-                      label="Contract Address" 
-                      value={tokenData.address} 
-                      isAddress 
-                    />
-                    <InfoItem 
-                      label="Price" 
-                      value={`$${parseFloat(tokenData.price_usd).toFixed(6)}`} 
-                    />
-                    <InfoItem 
-                      label="Market Cap" 
-                      value={`$${formatNumber(parseFloat(tokenData.market_cap_usd))}`} 
-                    />
-                    <InfoItem 
-                      label="Fully Diluted Valuation" 
-                      value={`$${formatNumber(parseFloat(tokenData.fdv_usd))}`} 
-                    />
-                    <InfoItem 
-                      label="24h Volume" 
-                      value={`$${formatNumber(parseFloat(tokenData.volume_24h))}`} 
-                    />
-                    <InfoItem 
-                      label="Total Supply" 
-                      value={formatNumber(parseFloat(tokenData.total_supply))} 
-                    />
-                    <InfoItem 
-                      label="Total Reserve in USD" 
-                      value={`$${formatNumber(parseFloat(tokenData.total_reserve_in_usd))}`} 
-                    />
-                    <InfoItem 
-                      label="Decimals" 
-                      value={tokenData.decimals} 
-                    />
-                    <InfoItem 
-                      label="GT Score" 
-                      value={tokenData.gt_score} 
-                    />
-                  </div>
-
-                  {tokenData.description && tokenData.description !== 'N/A' && (
-                    <div className="glass-card p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold mb-2">Description</h3>
-                      <p className="text-slate-300">{tokenData.description}</p>
-                    </div>
-                  )}
-
-                  {tokenData.websites.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold">Websites</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {tokenData.websites.map((website, index) => (
-                          <InfoItem
-                            key={index}
-                            label={`Website ${index + 1}`}
-                            value={website}
-                            isLink
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {(tokenData.discord_url || tokenData.telegram_handle || tokenData.twitter_handle) && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold">Social Accounts</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {tokenData.discord_url && (
-                          <InfoItem
-                            label="Discord"
-                            value={tokenData.discord_url}
-                            isLink
-                          />
-                        )}
-                        {tokenData.telegram_handle && (
-                          <InfoItem
-                            label="Telegram"
-                            value={`https://t.me/${tokenData.telegram_handle}`}
-                            isLink
-                          />
-                        )}
-                        {tokenData.twitter_handle && (
-                          <InfoItem
-                            label="Twitter"
-                            value={`https://twitter.com/${tokenData.twitter_handle}`}
-                            isLink
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {tokenData.top_pools.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold">Top Pools</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {tokenData.top_pools.map((pool, index) => (
-                          <InfoItem
-                            key={pool}
-                            label={`Pool ${index + 1}`}
-                            value={pool}
-                            isAddress
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <TokenDataDisplay
+                  tokenData={tokenData}
+                  network={network}
+                  isTokenWhitelisted={isTokenWhitelisted}
+                  toggleWhitelist={toggleWhitelist}
+                />
               )}
 
-              {recentTokens.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold">Recently Updated Tokens</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {recentTokens.map((token) => (
-                      <div key={token.id} className="token-card">
-                        <h4 className="font-bold mb-2">{token.name} ({token.symbol})</h4>
-                        <p className="text-sm text-slate-400">Network: {token.network.toUpperCase()}</p>
-                        <p className="text-sm text-slate-400">
-                          Price: ${parseFloat(token.price_usd).toFixed(6)}
-                        </p>
-                        <p className="text-sm text-slate-400">
-                          24h Volume: ${formatNumber(parseFloat(token.volume_24h))}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <RecentTokensList recentTokens={recentTokens} />
             </>
           )}
         </div>
       </div>
  
-      <div className="flex justify-center space-x-4 mt-8">
-      <a href="https://www.linkedin.com/in/yasir-bashir-6b3a8098" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
-        <Linkedin size={24} />
+      <div className="flex justify-center space-x-4 mt-6 sm:mt-8">
+      <a href="https://t.me/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+        <MessageCircleCode size={20} className="sm:w-6 sm:h-6" />
       </a>
-      <a href="https://github.com/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
-        <Github size={24} />
-      </a>
-    </div>
+
+        <a href="https://github.com/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+          <Github size={20} className="sm:w-6 sm:h-6" />
+        </a>
+      </div>
     </div>
   );
 };
 
 export default TokenVerifier;
+

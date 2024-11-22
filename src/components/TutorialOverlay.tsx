@@ -70,6 +70,7 @@ const tutorialSteps: TutorialStep[] = [
       position: 'top',
       image: '/images/step9.png', // Example image path
     },
+    
   ];
 
 

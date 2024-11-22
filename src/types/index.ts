@@ -24,6 +24,10 @@ export interface TokenData {
 }
 
 export interface RecentToken {
+  priceChangePercentage: any;
+  marketCapUsd(marketCapUsd: any): number;
+  baseTokenPriceUsd(baseTokenPriceUsd: any): unknown;
+  address: any;
   id: string;
   name: string;
   symbol: string;
