@@ -4,6 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AccountQuery from '../../components/AccountQuery/page';
 import TokenQuery from '../../components/TokenQuery/page';
+import { LoaderPinwheel, HelpCircle } from 'lucide-react';
+import { Tooltip } from '../../components/Tooltip';
 
 const API_CONFIGS = {
   tron: {
@@ -91,8 +93,7 @@ const AddressVerifier: React.FC = () => {
         <Header />
 
         {/* Network Selection */}
-        <div className="flex justify-center space-x-4 mb-8">
-
+        <div className="flex justify-center items-center space-x-4 mb-8">
           <button
             onClick={() => setSelectedNetwork('tron')}
             className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 `}
@@ -105,11 +106,19 @@ const AddressVerifier: React.FC = () => {
                 width="100%"
                 height="100%"
                 style={{ objectFit: 'contain' }}
-
               />
             </div>
           </button>
+          <Tooltip
+            content="Currently, we only support Tron network for whale address tracking. More networks will be added soon."
+            direction="bottom"
+          >
+            <button className="text-slate-400 hover:text-slate-300 transition-colors duration-200">
+              <HelpCircle size={20} />
+            </button>
+          </Tooltip>
         </div>
+
 
         {/* Input and Action Section */}
         <div className="glass-card rounded-2xl p-6 space-y-6">
@@ -145,7 +154,7 @@ const AddressVerifier: React.FC = () => {
             >
               {isLoading ? (
                 <>
-                  <span className="animate-spin mr-2">🔄</span>
+                  <LoaderPinwheel />
                   Verifying...
                 </>
               ) : (
