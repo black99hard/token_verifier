@@ -71,7 +71,7 @@ const AddressVerifier: React.FC = () => {
         throw new Error('No data found for the entered address.');
       }
       setAccountData(data);
-      
+
       if (queryType === 'tokens') {
         setTokenData(data);
       }
@@ -92,11 +92,22 @@ const AddressVerifier: React.FC = () => {
 
         {/* Network Selection */}
         <div className="flex justify-center space-x-4 mb-8">
+
           <button
             onClick={() => setSelectedNetwork('tron')}
-            className={`btn ${selectedNetwork === 'tron' ? 'btn-primary' : 'btn-secondary'}`}
+            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 `}
           >
-            Tron
+            <span className="sr-only">{selectedNetwork}</span>
+            <div className="relative w-6 h-6">
+              <img
+                src={'/trx.png'}
+                alt={`${selectedNetwork} logo`}
+                width="100%"
+                height="100%"
+                style={{ objectFit: 'contain' }}
+
+              />
+            </div>
           </button>
         </div>
 

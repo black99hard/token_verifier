@@ -174,18 +174,20 @@ const TokenVerifier: React.FC = () => {
         <Header />
         
         <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4">
-              <NetworkButton network="tron" currentNetwork={network} onClick={setNetwork} />
-              <NetworkButton network="solana" currentNetwork={network} onClick={setNetwork} />
-              <NetworkButton network="ton" currentNetwork={network} onClick={setNetwork} />
+        <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div className="flex items-center justify-center w-full sm:w-auto">
+              <div className="inline-flex p-1 rounded-full bg-slate-800 space-x-2">
+                <NetworkButton network="tron" currentNetwork={network} onClick={setNetwork} />
+                <NetworkButton network="solana" currentNetwork={network} onClick={setNetwork} />
+                <NetworkButton network="ton" currentNetwork={network} onClick={setNetwork} />
+              </div>
             </div>
             <button
               onClick={() => setShowWhitelist(!showWhitelist)}
-              className="flex items-center space-x-2 text-slate-400 hover:text-red-400 transition-colors duration-300"
+              className="flex items-center space-x-2 text-slate-400 hover:text-yellow-400 transition-colors duration-300"
             >
               <Star size={20} />
-              <span>{showWhitelist ? '' : ''}</span>
+              <span>{showWhitelist ? 'Close' : 'Watchlist'}</span>
             </button>
           </div>
 

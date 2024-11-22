@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { RecentToken } from '../types';
 import { shortenNumber } from '../utils/format';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, Copy, ChevronDown } from 'lucide-react';
-import { toast } from 'react-toastify';
 
 interface RecentTokensListProps {
   recentTokens: RecentToken[];

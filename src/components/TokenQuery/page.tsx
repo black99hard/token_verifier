@@ -42,7 +42,7 @@ const TokenQuery: React.FC<TokenQueryProps> = ({ data }) => {
 
   return (
       <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-purple-600 bg-clip-text text-transparent">
           Token Holdings
         </h1>
 

@@ -1,21 +1,26 @@
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ... (previous styles) */
+
+.network-button-container {
+  transition: all 0.3s ease;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+.network-button-container:hover {
+  transform: translateY(-2px);
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 640px) {
-  .glass-card {
-    padding: 0.75rem;
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
   }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.network-button-active {
+  animation: pulse 2s infinite;
 }
 
