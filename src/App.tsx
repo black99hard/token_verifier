@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -6,10 +6,27 @@ import TokenVerifier from './view/TokenVerifier/page';
 import AddressVerifier from './view/AddressVerifier/page';
 import { motion } from 'framer-motion';
 import { Coins, Wallet } from 'lucide-react';
+import TutorialOverlay from './components/TutorialOverlay';
 
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'token' | 'address'>('token');
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+    }
+  }, []);
+
+  const completeTutorial = () => {
+    setShowTutorial(false);
+    localStorage.setItem('hasSeenTutorial', 'true');
+  };
+
+
+
 
   const tabVariants = {
     active: { 
@@ -76,6 +93,7 @@ export default function App() {
           {currentView === 'address' && <AddressVerifier />}
         </motion.div>
       </div>
+      {showTutorial && <TutorialOverlay onComplete={completeTutorial} />}
 
       <Analytics />
       <SpeedInsights />
