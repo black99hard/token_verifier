@@ -22,7 +22,7 @@ export const WhitelistedTokens: React.FC<WhitelistedTokensProps> = ({
       </div>
     );
   }
-
+console.log(tokens);
   return (
     <div className="space-y-3">
       {tokens.map((token) => (
@@ -31,19 +31,31 @@ export const WhitelistedTokens: React.FC<WhitelistedTokensProps> = ({
           className="glass-card p-4 flex items-center justify-between group hover:border-red-500/30 transition-all duration-300"
         >
           <button
-            className="flex-1 text-left"
+            className="flex-1 flex items-center space-x-4 text-left"
             onClick={() => onSelect(token)}
           >
-            <h4 className="font-medium">{token.name} ({token.symbol})</h4>
-            <div className="flex items-center space-x-2 text-sm text-slate-400">
-              <span>{token.network.toUpperCase()}</span>
-              <span>•</span>
-              <span>Added {formatDistanceToNow(new Date(token.addedAt))} ago</span>
+            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+              <img
+                src={token.image_url || "/no_logo.png"}
+                alt={`${token.name} logo`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/no_image.png";
+                }}
+              />
+            </div>
+            <div>
+              <h4 className="font-medium">{token.name} ({token.symbol})</h4>
+              <div className="flex items-center space-x-2 text-sm text-slate-400">
+                <span>{token.network.toUpperCase()}</span>
+                <span>•</span>
+                <span>Added {formatDistanceToNow(new Date(token.addedAt))} ago</span>
+              </div>
             </div>
           </button>
           <button
             onClick={() => onRemove(token)}
-            className="text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            className="text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-300 ml-4"
             title="Remove from whitelist"
           >
             <Trash2 size={16} />
@@ -53,3 +65,4 @@ export const WhitelistedTokens: React.FC<WhitelistedTokensProps> = ({
     </div>
   );
 };
+

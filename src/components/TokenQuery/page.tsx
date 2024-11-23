@@ -61,7 +61,7 @@ const TokenQuery: React.FC<TokenQueryProps> = ({ data }) => {
 const TokenCard: React.FC<{ token: TokenData; onCopy: () => void; formatBalance: (balance: string, decimal: number) => string }> = ({ token, onCopy, formatBalance }) => (
   <div className="bg-white bg-opacity-10 p-4 rounded-lg flex flex-col">
     <div className="flex items-center space-x-4 mb-4">
-      <img src={token.tokenLogo} alt={token.tokenName} className="w-12 h-12 rounded-full" />
+      <img src={token.tokenLogo } alt={token.tokenName} className="w-12 h-12 rounded-full" />
       <div className="flex-grow">
         <h3 className="text-lg font-semibold">{token.tokenName}</h3>
         <p className="text-sm text-blue-300">{token.tokenAbbr}</p>

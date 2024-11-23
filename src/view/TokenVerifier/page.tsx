@@ -49,6 +49,7 @@ const TokenVerifier: React.FC = () => {
         address: token.address,
         name: token.name,
         symbol: token.symbol,
+        image_url: token.image_url,
         network,
         addedAt: new Date().toISOString(),
       };

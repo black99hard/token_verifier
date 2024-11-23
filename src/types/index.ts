@@ -42,6 +42,7 @@ export interface WhitelistedToken {
   symbol: string;
   network: Network;
   addedAt: string;
+  image_url: string | null;
 }
 
 
