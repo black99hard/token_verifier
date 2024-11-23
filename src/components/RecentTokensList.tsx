@@ -58,11 +58,10 @@ export const RecentTokensList: React.FC<RecentTokensListProps> = ({ recentTokens
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold text-lg">{token.name}</h4>
+
                   <div className="flex items-center space-x-2">
                     <p className="text-sm text-slate-400">{token.address.slice(0, 6)}...{token.address.slice(-4)}</p>
-                    <button onClick={() => copyToClipboard(token.address)} className="text-slate-400 hover:text-slate-200">
-                      <Copy size={16} />
-                    </button>
+
                   </div>
                 </div>
                 <div className="text-right">

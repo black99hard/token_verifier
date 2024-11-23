@@ -1,7 +1,5 @@
-import React from 'react';
-import { Twitter, MessageCircle, Globe, Copy, HelpCircle } from 'lucide-react';
-import { toast } from 'react-toastify';
-import { Tooltip } from './Tooltip';
+import { useState } from 'react';
+import { Twitter, MessageCircle, Globe, Copy, Check } from 'lucide-react';
 
 interface BoostedToken {
   url: string;
@@ -12,7 +10,6 @@ interface BoostedToken {
   links: Array<{ type?: string; label?: string; url: string }>;
   totalAmount: number;
   amount: number;
-  boostedTokens: BoostedToken[];
 }
 
 interface BoostedTokensListProps {
@@ -20,83 +17,90 @@ interface BoostedTokensListProps {
 }
 
 export const BoostedTokensList: React.FC<BoostedTokensListProps> = ({ boostedTokens }) => {
-  if (!boostedTokens || boostedTokens.length === 0) {
+  const [copiedItem, setCopiedItem] = useState<string | null>(null);
+
+  if (!boostedTokens?.length) {
     return <p className="text-center text-slate-400">No boosted tokens available.</p>;
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard!');
+  const copyToClipboard = (text: string, item: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedItem(item);
+      setTimeout(() => setCopiedItem(null), 2000);
+    });
   };
 
-  // Use a Set to keep track of unique token addresses
-  const uniqueTokens = Array.from(new Set(boostedTokens.map(token => token.tokenAddress)))
-    .map(tokenAddress => boostedTokens.find(token => token.tokenAddress === tokenAddress));
+  const getTokenName = (address: string) => `${address.slice(0, 4)}...${address.slice(-4)}`;
 
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-purple-600 bg-clip-text text-transparent">
-        Boosted Tokens List
-        <Tooltip
-            content="List of tokens that have been boosted.  Click on the icons to visit the token's website, Twitter, or Telegram. The 'Boost' section shows the current amount of the token and the total amount of the token. The 'Boost' section is updated in real-time."
-            direction="left"
-          > 
-            <button className="text-slate-400 hover:text-slate-300 transition-colors duration-200">
-              <HelpCircle size={20} />
-            </button>
-          </Tooltip>
+        Boosted Tokens
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {uniqueTokens.map((token) => (
-          token && (
-            <div key={token.tokenAddress} className="glass-card p-4 rounded-lg space-y-3 hover:shadow-lg transition-shadow duration-300">
+        {boostedTokens.map(({ tokenAddress, chainId, icon, description, links, amount, totalAmount }) => {
+          const tokenName = getTokenName(tokenAddress);
+          return (
+            <div key={tokenAddress} className="glass-card p-4 rounded-lg space-y-3 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
               <div className="flex items-center space-x-3">
-                {token.icon && (
-                  <img src={token.icon} alt={`${token.tokenAddress} icon`} className="w-10 h-10 rounded-full" />
-                )}
-                <div>
-                  <h4 className="font-semibold text-lg flex items-center space-x-2">
-                    <span>{token.tokenAddress.slice(0, 6)}...{token.tokenAddress.slice(-4)}</span>
-                    <button onClick={() => copyToClipboard(token.tokenAddress)} className="text-slate-400 hover:text-slate-200">
-                      <Copy size={16} />
-                    </button>
-                  </h4>
-                  <p className="text-sm text-slate-400 flex items-center space-x-2">
-                    <span>{token.chainId}</span>
-                    <button onClick={() => copyToClipboard(token.chainId)} className="text-slate-400 hover:text-slate-200">
-                      <Copy size={16} />
-                    </button>
-                  </p>
+                {icon && <img src={icon} alt={`${tokenName} icon`} className="w-10 h-10 rounded-full" />}
+                <div className="overflow-hidden flex-grow">
+                  <div className="flex items-center space-x-2">
+                    <h4 className="font-semibold text-lg truncate">{tokenName}</h4>
+                  </div>
+                  <p className="text-sm text-slate-400">{chainId}</p>
                 </div>
               </div>
-              <p className="text-sm text-slate-300 line-clamp-2">{token.description}</p>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={tokenAddress}
+                  readOnly
+                  className="bg-slate-700 text-slate-200 text-xs p-1 rounded flex-grow overflow-hidden text-ellipsis"
+                />
+                <button
+                  onClick={() => copyToClipboard(tokenAddress, `address-${tokenAddress}`)}
+                  className="p-1 bg-slate-600 rounded hover:bg-slate-500 transition-colors duration-200 flex-shrink-0"
+                  aria-label="Copy token address"
+                >
+                  {copiedItem === `address-${tokenAddress}` ? (
+                    <Check size={16} className="text-green-400" />
+                  ) : (
+                    <Copy size={16} className="text-slate-200" />
+                  )}
+                </button>
+              </div>
+              <p className="text-sm text-slate-300 line-clamp-2">{description}</p>
               <div className="flex justify-between items-center">
-                <div className="flex space-x-2 hoververflow-x-auto">
-                  {(token.links || []).map((link, index) => (
-                    link?.url && (
-                      <a
-                        key={index}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-slate-400 hover:text-slate-200 transition-colors duration-200"
-                      >
-                        {link.type === 'twitter' && <Twitter size={20} />}
-                        {link.type === 'telegram' && <MessageCircle size={20} />}
-                        {(link.label === 'Website' || !link.type) && <Globe size={20} />}
-                      </a>
-                    )
-                  ))}
+                <div className="overflow-x-auto">
+                  <div className="flex space-x-2 min-w-max">
+                    {(links || []).map((link, index) => (
+                      link?.url && (
+                        <a
+                          key={index}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-slate-200 transition-colors duration-200"
+                        >
+                          {link.type === 'twitter' && <Twitter size={20} />}
+                          {link.type === 'telegram' && <MessageCircle size={20} />}
+                          {(link.label === 'Website' || !link.type) && <Globe size={20} />}
+                        </a>
+                      )
+                    ))}
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-slate-400">Boost</p>
-                  <p className="font-medium">{token.amount} / {token.totalAmount}</p>
+                  <p className="font-medium">{amount} / {totalAmount}</p>
                 </div>
               </div>
             </div>
-          )
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 };
+

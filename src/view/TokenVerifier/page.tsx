@@ -216,7 +216,7 @@ const TokenVerifier: React.FC = () => {
       <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         <Header />
         
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex items-center justify-center w-full sm:w-auto">
               <div className="inline-flex p-1 rounded-full bg-slate-800 space-x-2">

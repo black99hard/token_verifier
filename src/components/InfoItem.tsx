@@ -8,6 +8,7 @@ interface InfoItemProps {
   isLink?: boolean;
   icon?: React.ReactNode;
   className?: string;
+  
 }
 
 export const InfoItem: React.FC<InfoItemProps> = ({ 
