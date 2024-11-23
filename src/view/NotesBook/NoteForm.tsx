@@ -62,7 +62,9 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
                 <button
                   key={cat.value}
                   onClick={() => {
-                    setCategory(cat.value);
+                    if (cat.value) {
+                      setCategory(cat.value as NoteCategory);
+                    }
                     setShowDropdown(false);
                   }}
                   className={clsx(
@@ -80,7 +82,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
         
         <button onClick={handleSubmit} className="btn-primary flex items-center gap-2">
           <Plus className="w-4 h-4" />
-          Add Note
+         
         </button>
       </div>
     </div>
