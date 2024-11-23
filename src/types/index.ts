@@ -43,3 +43,19 @@ export interface WhitelistedToken {
   network: Network;
   addedAt: string;
 }
+
+
+export interface BoostedToken {
+  url: string;
+  chainId: string;
+  tokenAddress: string;
+  icon: string;
+  name: string;
+  symbol: string;
+  price: number;
+  description: string;
+  links: Array<{ type?: string; label?: string; url: string }>;
+  totalAmount: number;
+  amount: number;
+  boostedTokens: BoostedToken[];
+}

@@ -7,7 +7,8 @@ import { TokenDataDisplay } from '../../components/TokenDataDisplay';
 import { Header } from '../../components/Header';
 import { SearchForm } from '../../components/SearchForm';
 import { RecentTokensList } from '../../components/RecentTokensList';
-import { Network, TokenData, RecentToken, WhitelistedToken } from '../../types';
+import { BoostedTokensList } from '../../components/BoostedTokensList';
+import { Network, TokenData, RecentToken, WhitelistedToken, BoostedToken } from '../../types';
 import { getWhitelistedTokens, saveWhitelistedTokens } from '../../utils/cookies';
 import './custom.css';
 
@@ -18,9 +19,11 @@ const TokenVerifier: React.FC = () => {
   const [recentTokens, setRecentTokens] = useState<RecentToken[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
+  const [isLoadingBoosted, setIsLoadingBoosted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [whitelistedTokens, setWhitelistedTokens] = useState<WhitelistedToken[]>([]);
   const [showWhitelist, setShowWhitelist] = useState(false);
+  const [boostedTokens, setBoostedTokens] = useState<BoostedToken[]>([]);
 
   useEffect(() => {
     setWhitelistedTokens(getWhitelistedTokens());
@@ -84,6 +87,7 @@ const TokenVerifier: React.FC = () => {
         throw new Error(`Error fetching data: ${response1.statusText} / ${response2.statusText}`);
       }
       setRecentTokens([]);
+      setBoostedTokens([]);
 
       const [data1, data2] = await Promise.all([response1.json(), response2.json()]);
 
@@ -132,6 +136,7 @@ const TokenVerifier: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       setTokenData(null);
+      setBoostedTokens([]);
       const data = await response.json();
   
       if (data.data && Array.isArray(data.data)) {
@@ -166,6 +171,43 @@ const TokenVerifier: React.FC = () => {
       setIsLoadingRecent(false);
     }
   };
+
+  const fetchBoostedTokens = async () => {
+    setIsLoadingBoosted(true);
+
+    try {
+      const response = await fetch('https://api.dexscreener.com/token-boosts/latest/v1');
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const mappedData = data.map((token: any) => ({
+          url: token.url,
+          chainId: token.chainId,
+          tokenAddress: token.tokenAddress,
+          icon: token.icon,
+          name: token.name,
+          symbol: token.symbol,
+          price: token.price,
+          change: token.change,
+          description: token.description,
+          links: token.links,
+          totalAmount: token.totalAmount,
+          amount: token.amount,
+        }));
+        setRecentTokens([]);
+        setTokenData(null);
+        setBoostedTokens(mappedData);
+
+      }
+    } catch (error) {
+      console.error('Error fetching boosted tokens:', error);
+    }finally {
+      setIsLoadingBoosted(false);
+    }
+  };
+
+
+
   
 
   return (
@@ -212,8 +254,10 @@ const TokenVerifier: React.FC = () => {
                 setContractAddress={setContractAddress}
                 verifyToken={() => verifyToken()}
                 fetchTrendingTokens={fetchTrendingTokens}
+                fetchBoostedTokens={fetchBoostedTokens}
                 isLoading={isLoading}
                 isLoadingRecent={isLoadingRecent}
+                isLoadingBoosted={isLoadingBoosted}
               />
 
               {error && (
@@ -232,6 +276,9 @@ const TokenVerifier: React.FC = () => {
               )}
 
               <RecentTokensList recentTokens={recentTokens} />
+
+              <BoostedTokensList boostedTokens={boostedTokens} />
+
             </>
           )}
         </div>
