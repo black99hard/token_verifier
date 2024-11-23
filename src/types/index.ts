@@ -60,3 +60,14 @@ export interface BoostedToken {
   amount: number;
   boostedTokens: BoostedToken[];
 }
+
+
+export type NoteCategory = 'wallet' | 'token' | 'contract';
+
+export interface Note {
+  id: string;
+  address: string;
+  note: string;
+  category: NoteCategory;
+  timestamp: number;
+}
