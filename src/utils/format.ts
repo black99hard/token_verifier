@@ -1,8 +1,8 @@
-export function formatNumber(num: number): string {
+export function formatNumber(num: number, p0: number): string {
   return new Intl.NumberFormat('en-US').format(num);
 }
 
-export function shortenNumber(num: number): string {
+export function shortenNumber(num: number, p0: number): string {
   if (num >= 1e9) {
     return (num / 1e9).toFixed(1) + 'B';
   }

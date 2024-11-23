@@ -35,57 +35,96 @@ const TokenQuery: React.FC<TokenQueryProps> = ({ data }) => {
   if (!data || !data.data) {
     return <div className="text-red-500">No token data available.</div>;
   }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
   };
 
   return (
-      <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-purple-600 bg-clip-text text-transparent">
-          Token Holdings
-        </h1>
+    <div className="max-w-7xl mx-auto space-y-10">
+      <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent">
+        Token Holdings
+      </h1>
 
-        <div className="glass-card rounded-2xl p-6 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.data.map((token, index) => (
-              <TokenCard key={index} token={token} onCopy={() => copyToClipboard(token.tokenId)} formatBalance={formatBalance} />
-            ))}
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {data.data.map((token, index) => (
+          <TokenCard
+            key={index}
+            token={token}
+            onCopy={() => copyToClipboard(token.tokenId)}
+            formatBalance={formatBalance}
+          />
+        ))}
       </div>
-
+    </div>
   );
 };
 
-const TokenCard: React.FC<{ token: TokenData; onCopy: () => void; formatBalance: (balance: string, decimal: number) => string }> = ({ token, onCopy, formatBalance }) => (
-  <div className="bg-white bg-opacity-10 p-4 rounded-lg flex flex-col">
-    <div className="flex items-center space-x-4 mb-4">
-      <img src={token.tokenLogo } alt={token.tokenName} className="w-12 h-12 rounded-full" />
+const TokenCard: React.FC<{
+  token: TokenData;
+  onCopy: () => void;
+  formatBalance: (balance: string, decimal: number) => string;
+}> = ({ token, onCopy, formatBalance }) => (
+  <div className="token-card space-y-4">
+    <div className="flex items-center space-x-4">
+      <img
+        src={token.tokenLogo}
+        alt={token.tokenName}
+        className="w-16 h-16 rounded-full shadow-md"
+      />
       <div className="flex-grow">
-        <h3 className="text-lg font-semibold">{token.tokenName}</h3>
-        <p className="text-sm text-blue-300">{token.tokenAbbr}</p>
+        <h3 className="text-xl font-semibold">{token.tokenName}</h3>
+        <p className="text-sm text-slate-400">{token.tokenAbbr}</p>
       </div>
-      <button onClick={onCopy} className="text-blue-300 hover:text-blue-100">
-        <Copy size={18} />
+      <button onClick={onCopy} className="text-slate-300 hover:text-slate-100">
+        <Copy size={20} />
       </button>
     </div>
-    <div className="space-y-2">
-      {/* <InfoRow label="Balance" value={formatBalance(token.balance, token.tokenDecimal)} /> */}
+    <div className="section-content">
+      <InfoRow
+        label="Balance"
+        value={formatBalance(token.balance, token.tokenDecimal)}
+      />
       {token.amount && <InfoRow label="Amount" value={token.amount.toString()} />}
-      {token.amountInUsd && <InfoRow label="USD Value" value={`$${token.amountInUsd.toFixed(2)}`} />}
-      {token.tokenPriceInTrx && <InfoRow label="Price (TRX)" value={token.tokenPriceInTrx.toFixed(6)} />}
-      {token.tokenPriceInUsd && <InfoRow label="Price (USD)" value={`$${token.tokenPriceInUsd.toFixed(6)}`} />}
-      {token.nrOfTokenHolders && <InfoRow label="Holders" value={token.nrOfTokenHolders.toLocaleString()} />}
-      {token.transferCount && <InfoRow label="Transfers" value={token.transferCount.toLocaleString()} />}
+      {token.amountInUsd && (
+        <InfoRow
+          label="USD Value"
+          value={`$${token.amountInUsd.toFixed(2)}`}
+        />
+      )}
+      {token.tokenPriceInTrx && (
+        <InfoRow
+          label="Price (TRX)"
+          value={`${token.tokenPriceInTrx.toFixed(6)} TRX`}
+        />
+      )}
+      {token.tokenPriceInUsd && (
+        <InfoRow
+          label="Price (USD)"
+          value={`$${token.tokenPriceInUsd.toFixed(6)}`}
+        />
+      )}
+      {token.nrOfTokenHolders && (
+        <InfoRow
+          label="Holders"
+          value={token.nrOfTokenHolders.toLocaleString()}
+        />
+      )}
+      {token.transferCount && (
+        <InfoRow
+          label="Transfers"
+          value={token.transferCount.toLocaleString()}
+        />
+      )}
     </div>
   </div>
 );
 
 const InfoRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="flex justify-between">
-    <span className="text-gray-400">{label}:</span>
-    <span className="font-medium">{value}</span>
+    <span className="info-label">{label}:</span>
+    <span className="info-value">{value}</span>
   </div>
 );
 
