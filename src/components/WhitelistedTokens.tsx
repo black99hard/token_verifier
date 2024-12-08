@@ -16,19 +16,19 @@ export const WhitelistedTokens: React.FC<WhitelistedTokensProps> = ({
 }) => {
   if (tokens.length === 0) {
     return (
-      <div className="glass-card p-6 text-center">
+      <div className="bg-black/60 border border-red-500/20 p-6 text-center rounded-lg">
         <Star className="mx-auto mb-2 text-slate-400" size={24} />
         <p className="text-slate-400">No whitelisted tokens yet</p>
       </div>
     );
   }
-console.log(tokens);
+
   return (
     <div className="space-y-3">
       {tokens.map((token) => (
         <div
           key={`${token.network}-${token.address}`}
-          className="glass-card p-4 flex items-center justify-between group hover:border-red-500/30 transition-all duration-300"
+          className="bg-black/40 border border-red-500/20 p-4 flex items-center justify-between group hover:border-red-500/30 transition-all duration-300 rounded-lg"
         >
           <button
             className="flex-1 flex items-center space-x-4 text-left"
@@ -45,7 +45,7 @@ console.log(tokens);
               />
             </div>
             <div>
-              <h4 className="font-medium">{token.name} ({token.symbol})</h4>
+              <h4 className="font-medium text-gray-100">{token.name} ({token.symbol})</h4>
               <div className="flex items-center space-x-2 text-sm text-slate-400">
                 <span>{token.network.toUpperCase()}</span>
                 <span>•</span>
@@ -65,4 +65,3 @@ console.log(tokens);
     </div>
   );
 };
-

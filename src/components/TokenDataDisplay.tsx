@@ -50,22 +50,18 @@ export const TokenDataDisplay: React.FC<TokenDataDisplayProps> = ({
         <InfoItem 
           label="Price" 
           value={`$${formatNumber(parseFloat(tokenData.price_usd), 6)}`}
-        
         />
         <InfoItem 
           label="Market Cap" 
           value={`$${shortenNumber(parseFloat(tokenData.market_cap_usd), 1)}`} 
-  
         />
         <InfoItem 
           label="FDV" 
           value={`$${shortenNumber(parseFloat(tokenData.fdv_usd), 1)}`} 
-       
         />
         <InfoItem 
           label="24h Volume" 
           value={`$${shortenNumber(parseFloat(tokenData.volume_24h), 1)}`} 
-     
         />
         <InfoItem 
           label="Total Supply" 
@@ -86,8 +82,8 @@ export const TokenDataDisplay: React.FC<TokenDataDisplayProps> = ({
         />
       </div>
 
-      <div className="glass-card p-4 rounded-lg space-y-4">
-        <h3 className="section-title">Contract Address</h3>
+      <div className="bg-black/40 border border-red-500/20 p-4 rounded-lg space-y-4">
+        <h3 className="text-lg font-semibold text-slate-100 mb-3">Contract Address</h3>
         <InfoItem 
           value={tokenData.address} 
           isAddress 
@@ -96,15 +92,15 @@ export const TokenDataDisplay: React.FC<TokenDataDisplayProps> = ({
       </div>
 
       {tokenData.description && tokenData.description !== 'N/A' && (
-        <div className="glass-card p-4 rounded-lg space-y-2">
-          <h3 className="section-title">Description</h3>
+        <div className="bg-black/40 border border-red-500/20 p-4 rounded-lg space-y-2">
+          <h3 className="text-lg font-semibold text-slate-100 mb-3">Description</h3>
           <p className="text-slate-300 text-sm leading-relaxed">{tokenData.description}</p>
         </div>
       )}
 
       {tokenData.websites.length > 0 && (
-        <div className="glass-card p-4 rounded-lg space-y-3">
-          <h3 className="section-title">Websites</h3>
+        <div className="bg-black/40 border border-red-500/20 p-4 rounded-lg space-y-3">
+          <h3 className="text-lg font-semibold text-slate-100 mb-3">Websites</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {tokenData.websites.map((website, index) => (
               <InfoItem
@@ -119,8 +115,8 @@ export const TokenDataDisplay: React.FC<TokenDataDisplayProps> = ({
       )}
 
       {(tokenData.discord_url || tokenData.telegram_handle || tokenData.twitter_handle) && (
-        <div className="glass-card p-4 rounded-lg space-y-3">
-          <h3 className="section-title">Social Accounts</h3>
+        <div className="bg-black/40 border border-red-500/20 p-4 rounded-lg space-y-3">
+          <h3 className="text-lg font-semibold text-slate-100 mb-3">Social Accounts</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {tokenData.discord_url && (
               <InfoItem
@@ -148,8 +144,8 @@ export const TokenDataDisplay: React.FC<TokenDataDisplayProps> = ({
       )}
 
       {tokenData.top_pools.length > 0 && (
-        <div className="glass-card p-4 rounded-lg space-y-3">
-          <h3 className="section-title">Top Pools</h3>
+        <div className="bg-black/40 border border-red-500/20 p-4 rounded-lg space-y-3">
+          <h3 className="text-lg font-semibold text-slate-100 mb-3">Top Pools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {tokenData.top_pools.map((pool, index) => (
               <InfoItem
@@ -165,4 +161,3 @@ export const TokenDataDisplay: React.FC<TokenDataDisplayProps> = ({
     </div>
   );
 };
-

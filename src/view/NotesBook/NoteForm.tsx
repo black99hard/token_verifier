@@ -30,7 +30,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
           placeholder="Enter address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          className="input-field"
+          className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 text-gray-100 placeholder-slate-400"
         />
       </div>
 
@@ -39,7 +39,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
           placeholder="Write your note..."
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="input-field min-h-[100px] resize-none"
+          className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 text-gray-100 placeholder-slate-400 min-h-[100px] resize-none"
         />
       </div>
 
@@ -47,18 +47,18 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
         <div className="relative flex-1">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="input-field flex items-center justify-between"
+            className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg flex items-center justify-between text-gray-100"
           >
             <div className="flex items-center gap-2">
-              {CATEGORIES.find((c: { value: any; }) => c.value === category)?.icon}
-              <span>{CATEGORIES.find((c: { value: any; }) => c.value === category)?.label}</span>
+              {CATEGORIES.find((c) => c.value === category)?.icon}
+              <span>{CATEGORIES.find((c) => c.value === category)?.label}</span>
             </div>
             <ChevronDown className="w-4 h-4" />
           </button>
           
           {showDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-2 glass-card rounded-lg overflow-hidden z-10">
-              {CATEGORIES.map((cat: { value: React.Key | null | undefined; icon: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; label: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-black/60 border border-red-500/20 rounded-lg overflow-hidden z-10">
+              {CATEGORIES.map((cat) => (
                 <button
                   key={cat.value}
                   onClick={() => {
@@ -68,8 +68,8 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
                     setShowDropdown(false);
                   }}
                   className={clsx(
-                    "w-full px-4 py-3 flex items-center gap-2 hover:bg-slate-700/50 transition-colors",
-                    category === cat.value && "bg-slate-700/50"
+                    "w-full px-4 py-3 flex items-center gap-2 hover:bg-red-500/20 transition-colors",
+                    category === cat.value && "bg-red-500/20"
                   )}
                 >
                   {cat.icon}
@@ -80,9 +80,9 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
           )}
         </div>
         
-        <button onClick={handleSubmit} className="btn-primary flex items-center gap-2">
+        <button onClick={handleSubmit} className="bg-red-500/20 hover:bg-red-500/30 text-red-400 flex items-center gap-2 px-4 py-2 rounded-lg transition-colors">
           <Plus className="w-4 h-4" />
-         
+          Add Note
         </button>
       </div>
     </div>

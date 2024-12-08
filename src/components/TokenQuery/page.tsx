@@ -42,20 +42,22 @@ const TokenQuery: React.FC<TokenQueryProps> = ({ data }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10">
-      <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent">
-        Token Holdings
-      </h1>
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-black/60">
+      <div className="max-w-7xl mx-auto space-y-10">
+        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent">
+          Token Holdings
+        </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {data.data.map((token, index) => (
-          <TokenCard
-            key={index}
-            token={token}
-            onCopy={() => copyToClipboard(token.tokenId)}
-            formatBalance={formatBalance}
-          />
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {data.data.map((token, index) => (
+            <TokenCard
+              key={index}
+              token={token}
+              onCopy={() => copyToClipboard(token.tokenId)}
+              formatBalance={formatBalance}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -66,7 +68,7 @@ const TokenCard: React.FC<{
   onCopy: () => void;
   formatBalance: (balance: string, decimal: number) => string;
 }> = ({ token, onCopy, formatBalance }) => (
-  <div className="token-card space-y-4">
+  <div className="bg-black/40 border border-red-500/20 p-4 rounded-lg space-y-4">
     <div className="flex items-center space-x-4">
       <img
         src={token.tokenLogo}
@@ -74,14 +76,14 @@ const TokenCard: React.FC<{
         className="w-16 h-16 rounded-full shadow-md"
       />
       <div className="flex-grow">
-        <h3 className="text-xl font-semibold">{token.tokenName}</h3>
-        <p className="text-sm text-slate-400">{token.tokenAbbr}</p>
+        <h3 className="text-xl font-semibold text-gray-100">{token.tokenName}</h3>
+        <p className="text-sm text-red-400">{token.tokenAbbr}</p>
       </div>
-      <button onClick={onCopy} className="text-slate-300 hover:text-slate-100">
+      <button onClick={onCopy} className="text-red-400 hover:text-red-200">
         <Copy size={20} />
       </button>
     </div>
-    <div className="section-content">
+    <div className="space-y-2">
       <InfoRow
         label="Balance"
         value={formatBalance(token.balance, token.tokenDecimal)}
@@ -123,8 +125,8 @@ const TokenCard: React.FC<{
 
 const InfoRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="flex justify-between">
-    <span className="info-label">{label}:</span>
-    <span className="info-value">{value}</span>
+    <span className="text-sm text-slate-400">{label}:</span>
+    <span className="text-base font-medium text-slate-100">{value}</span>
   </div>
 );
 

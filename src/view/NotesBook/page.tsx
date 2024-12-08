@@ -53,14 +53,14 @@ const NotesBook: React.FC<NotesBookProps> = ({ className }) => {
 
   return (
     <div className={clsx("max-w-7xl mx-auto space-y-10", className)}>
-      <div className="glass-card p-8 rounded-2xl animate-glow">
+      <div className="bg-black/60 border border-red-500/20 p-8 rounded-2xl animate-glow">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] bg-clip-text text-transparent mb-8">
             Notes Book
           </h1>
           <Tooltip
-          content="The NotesBook allows you to store and manage wallet addresses along with notes. You can add new addresses, write notes for each address, and delete them when no longer needed. Use the copy button to quickly copy the address to your clipboard."
-          direction="left"
+            content="The NotesBook allows you to store and manage wallet addresses along with notes. You can add new addresses, write notes for each address, and delete them when no longer needed. Use the copy button to quickly copy the address to your clipboard."
+            direction="left"
           >
             <button className="text-slate-400 hover:text-slate-300 transition-colors duration-200">
               <HelpCircle size={20} />
@@ -78,7 +78,7 @@ const NotesBook: React.FC<NotesBookProps> = ({ className }) => {
               placeholder="Search notes..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input-field pl-12"
+              className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 text-gray-100 placeholder-slate-400 pl-12"
             />
           </div>
 

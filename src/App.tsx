@@ -5,13 +5,14 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import TokenVerifier from './view/TokenVerifier/page';
 import AddressVerifier from './view/AddressVerifier/page';
 import NotesBook from './view/NotesBook/page';
+import AIprompt from './view/Ai/page';
 import { motion } from 'framer-motion';
 import { Coins, Wallet, Notebook } from 'lucide-react';
 import TutorialOverlay from './components/TutorialOverlay';
-
-
+import MatrixRain from './components/MatrixRain';
+import Terminal from './components/RetroElements/Terminal';
 export default function App() {
-  const [currentView, setCurrentView] = useState<'token' | 'address' | 'notebook'>('token');
+  const [currentView, setCurrentView] = useState<'token' | 'address' | 'aiprompt' | 'notebook'>('token');
   const [showTutorial, setShowTutorial] = useState(false);
 
   useEffect(() => {
@@ -50,6 +51,8 @@ export default function App() {
 
   return (
     <div className="App min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+            <MatrixRain />
+            <Terminal />
       <div className="max-w-4xl mx-auto space-y-8">
       <nav className="flex flex-wrap justify-center  items-center mb-8">
           <div className="bg-gray-800 p-1 rounded-full flex space-x-1 overflow-x-auto">
@@ -80,6 +83,19 @@ export default function App() {
               <Wallet size={20} />
               <span>Address</span>
             </motion.button>
+            <motion.button
+              variants={tabVariants}
+              animate={currentView === 'aiprompt' ? 'active' : 'inactive'}
+              onClick={() => setCurrentView('aiprompt')}
+              className={`flex items-center space-x-2 px-6 py-2.5 rounded-full transition-all duration-300 ${
+                currentView === 'aiprompt'
+                  ? 'bg-red-500/20 text-red-400 shadow-lg shadow-red-500/10'
+                  : 'text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              <Wallet size={20} />
+              <span>AIPrompt</span>
+            </motion.button>
 
             <motion.button
               variants={tabVariants}
@@ -109,6 +125,7 @@ export default function App() {
           {currentView === 'token' && <TokenVerifier />}
           {currentView === 'address' && <AddressVerifier />}
           {currentView === 'notebook' && <NotesBook />}
+          {currentView === 'aiprompt' && <AIprompt />}
         </motion.div>
       </div>
 

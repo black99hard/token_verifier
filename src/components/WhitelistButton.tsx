@@ -21,8 +21,8 @@ export const WhitelistButton: React.FC<WhitelistButtonProps> = ({
     <Star
       className={`${
         isWhitelisted 
-          ? 'fill-yellow-400 text-yellow-400' 
-          : 'text-slate-400 hover:text-yellow-400'
+          ? 'fill-red-400 text-red-400' 
+          : 'text-slate-400 hover:text-red-400'
       } transition-colors duration-300`}
       size={20}
     />

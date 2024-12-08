@@ -87,7 +87,7 @@ const AddressVerifier: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header Section */}
         <Header />
@@ -96,7 +96,7 @@ const AddressVerifier: React.FC = () => {
         <div className="flex justify-center items-center space-x-4 mb-8">
           <button
             onClick={() => setSelectedNetwork('tron')}
-            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 `}
+            className="flex items-center justify-center p-2 rounded-full transition-all duration-300"
           >
             <span className="sr-only">{selectedNetwork}</span>
             <div className="relative w-6 h-6">
@@ -119,16 +119,15 @@ const AddressVerifier: React.FC = () => {
           </Tooltip>
         </div>
 
-
         {/* Input and Action Section */}
-        <div className="glass-card rounded-2xl p-6 space-y-6">
+        <div className="bg-black/40 border border-red-500/20 rounded-2xl p-6 space-y-6">
           <div className="relative">
             <input
               type="text"
               placeholder="Enter blockchain address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="input-field pl-10"
+              className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 text-gray-100 placeholder-slate-400"
             />
           </div>
 
@@ -137,7 +136,7 @@ const AddressVerifier: React.FC = () => {
               <select
                 value={queryType}
                 onChange={(e) => setQueryType(e.target.value)}
-                className="input-field mb-4"
+                className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 text-gray-100 mb-4"
               >
                 <option value="">Select Query Type</option>
                 <option value="account">Account</option>
@@ -150,7 +149,7 @@ const AddressVerifier: React.FC = () => {
             <button
               onClick={handleFetchAddressData}
               disabled={isLoading}
-              className="btn-primary flex-1 flex items-center justify-center"
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 flex-1 flex items-center justify-center px-4 py-2 rounded-lg transition-colors"
             >
               {isLoading ? (
                 <>

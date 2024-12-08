@@ -18,7 +18,7 @@ const tutorialSteps: TutorialStep[] = [
   },
     {
       target: '.nav-tabs',
-      content: 'Welcome to Yaks Token Verifier! Use these tabs to switch between verifying tokens and addresses.',
+      content: 'Welcome to Brat Token Verifier! Use these tabs to switch between verifying tokens and addresses.',
       position: 'bottom',
       image: '/images/step1.png', // Example image path
     },
@@ -116,7 +116,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete }) => {
           className="glass-card p-6 max-w-md w-full rounded-lg shadow-lg"
         >
           <h2 className="text-xl font-semibold text-slate-100 mb-4">
-            Welcome to Yaks Token Verifier
+            Welcome to Brat Token Verifier
           </h2>
           <div className="mb-4 relative h-40 w-full">
             <img

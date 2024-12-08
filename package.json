@@ -16,6 +16,7 @@
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.11.17",
+    "groq-sdk": "^0.9.0",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.436.0",
     "react": "^18.3.1",
@@ -24,7 +25,8 @@
     "react-modal": "^3.16.1",
     "react-tabs": "^6.0.2",
     "react-toastify": "^10.0.6",
-    "react-tooltip": "^5.28.0"
+    "react-tooltip": "^5.28.0",
+    "tailwind-scrollbar": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

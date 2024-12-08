@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Star,  Github, MessageCircleCode } from 'lucide-react';
+import { Star, Github, MessageCircleCode } from 'lucide-react';
 import { NetworkButton } from '../../components/NetworkButton';
 import { WhitelistedTokens } from '../../components/WhitelistedTokens';
 import { TokenDataDisplay } from '../../components/TokenDataDisplay';
@@ -207,19 +207,15 @@ const TokenVerifier: React.FC = () => {
     }
   };
 
-
-
-  
-
   return (
-    <div className="min-h-screen py-4 px-2 sm:py-8 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen py-4 px-2 sm:py-8 sm:px-4 md:px-6 lg:px-8 ">
       <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         <Header />
         
-        <div className="rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+        <div className="rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6 bg-black/40 border border-red-500/20">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex items-center justify-center w-full sm:w-auto">
-              <div className="inline-flex p-1 rounded-full bg-slate-800 space-x-2">
+              <div className="inline-flex p-1 rounded-full bg-black/40 border border-red-500/20 space-x-2">
                 <NetworkButton network="tron" currentNetwork={network} onClick={setNetwork} />
                 <NetworkButton network="solana" currentNetwork={network} onClick={setNetwork} />
                 <NetworkButton network="ton" currentNetwork={network} onClick={setNetwork} />
@@ -286,9 +282,9 @@ const TokenVerifier: React.FC = () => {
       </div>
  
       <div className="flex justify-center space-x-4 mt-6 sm:mt-8">
-      <a href="https://t.me/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
-        <MessageCircleCode size={20} className="sm:w-6 sm:h-6" />
-      </a>
+        <a href="https://t.me/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
+          <MessageCircleCode size={20} className="sm:w-6 sm:h-6" />
+        </a>
 
         <a href="https://github.com/black99hard" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200">
           <Github size={20} className="sm:w-6 sm:h-6" />
@@ -299,4 +295,3 @@ const TokenVerifier: React.FC = () => {
 };
 
 export default TokenVerifier;
-

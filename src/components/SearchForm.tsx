@@ -34,7 +34,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
           placeholder={`Enter ${network.toUpperCase()} contract address`}
           value={contractAddress}
           onChange={(e) => setContractAddress(e.target.value)}
-          className="input-field pl-12 w-full text-sm md:text-base py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 bg-black/40 border border-red-500/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 text-gray-100 placeholder-slate-400 pl-12"
         />
         <Search
           className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"
@@ -47,7 +47,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         <button
           onClick={verifyToken}
           disabled={isLoading}
-          className="btn-primary flex items-center justify-center gap-2 py-3 text-sm font-medium rounded-lg transition hover:shadow-md disabled:opacity-50"
+          className="bg-red-500/20 hover:bg-red-500/30 text-red-400 flex items-center justify-center gap-2 py-3 text-sm font-medium rounded-lg transition hover:shadow-md disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -62,7 +62,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         <button
           onClick={fetchTrendingTokens}
           disabled={isLoadingRecent}
-          className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm font-medium rounded-lg transition hover:shadow-md disabled:opacity-50"
+          className="bg-black/40 hover:bg-black/50 text-gray-100 flex items-center justify-center gap-2 py-3 text-sm font-medium rounded-lg transition hover:shadow-md disabled:opacity-50"
         >
           {isLoadingRecent ? (
             <>
@@ -80,7 +80,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         <button
           onClick={fetchBoostedTokens}
           disabled={isLoadingBoosted}
-          className="btn-primary flex items-center justify-center gap-2 py-3 text-sm font-medium rounded-lg transition hover:shadow-md disabled:opacity-50"
+          className="bg-red-500/20 hover:bg-red-500/30 text-red-400 flex items-center justify-center gap-2 py-3 text-sm font-medium rounded-lg transition hover:shadow-md disabled:opacity-50"
         >
           {isLoadingBoosted ? (
             <>

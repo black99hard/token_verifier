@@ -4,8 +4,6 @@ import { toast } from 'react-toastify'; // Import toast from react-toastify
 import { CATEGORIES } from './page';
 import { Note } from '../../types/';
 
-
-
 interface NotesListProps {
   notes: Note[];
   onDelete: (id: string) => void;
@@ -31,27 +29,27 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onDelete }) => {
   return (
     <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
       {notes.map((note) => (
-        <div key={note.id} className="token-card group">
+        <div key={note.id} className="bg-black/60 border border-red-500/20 p-4 rounded-lg shadow-md group">
           <div className="flex justify-between items-start gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 {CATEGORIES.find(c => c.value === note.category)?.icon}
-                <span className="text-sm text-slate-400">
+                <span className="text-sm text-gray-200">
                   {CATEGORIES.find(c => c.value === note.category)?.label}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <p className="font-mono text-sm text-slate-300 truncate">{note.address}</p>
+                <p className="font-mono text-sm text-gray-100 truncate">{note.address}</p>
                 <button
                   onClick={() => handleCopy(note.address)}
-                  className="p-1 hover:bg-slate-500/20 rounded-lg"
+                  className="p-1 hover:bg-red-500/20 rounded-lg"
                   title="Copy Address"
                 >
-                  <Clipboard className="w-4 h-4 text-slate-300" />
+                  <Clipboard className="w-4 h-4 text-gray-100" />
                 </button>
               </div>
-              <p className="mt-2 text-slate-400">{note.note}</p>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-gray-200">{note.note}</p>
+              <p className="mt-2 text-xs text-gray-400">
                 {new Date(note.timestamp).toLocaleDateString()}
               </p>
             </div>
